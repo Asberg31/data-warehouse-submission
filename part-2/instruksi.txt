@@ -1,2 +1,85 @@
 Instruksi:
-- jawab soal dan taruh solusi di folder ini!
+
+1. Aktifkan Docker compose
+
+asberg@asberg-ThinkPad-Edge-13:~/Desktop/citus-demo$ docker-compose up -d
+[+] Running 5/5
+ ⠿ Container citus-demo_master    Started                                                                                       8.2s
+ ⠿ Container citus-demo_manager   Started                                                                                       3.4s
+ ⠿ Container citus-demo_worker_1  Started                                                                                       9.3s
+ ⠿ Container citus-demo_worker_3  Started                                                                                      10.9s
+ ⠿ Container citus-demo_worker_2  Started     
+
+2. Masuk kedalam citus
+
+asberg@asberg-ThinkPad-Edge-13:~/Desktop/citus-demo$ psql -h localhost -p 5432 -U postgres -d store
+psql (16.0 (Ubuntu 16.0-1.pgdg22.04+1), server 15.3 (Debian 15.3-1.pgdg120+1))
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+Type "help" for help.
+
+store=#
+
+3. Buat table biasa
+
+store=# CREATE TABLE events (
+  device_id bigint,
+  event_id bigserial,
+  event_time timestamptz default now(),
+  data jsonb not null
+);
+CREATE TABLE
+
+4. Buat table columnar
+
+store=# CREATE TABLE events_columnar(
+device_id bigint,
+event_id bigserial,
+event_time timestamptz default now(),
+data jsonb not null
+)
+USING columnar;
+CREATE TABLE
+
+5. Insert 100 baris ke tabel biasa
+
+store=# INSERT INTO events (device_id, event_id, event_time, data)
+SELECT 
+  generate_series(1, 100) AS device_id,
+  nextval('events_event_id_seq') AS event_id,
+  now() AS event_time,
+  '{"key": "value"}' AS data;
+INSERT 0 100
+
+6. Insert 100 baris ke tabel columnar
+
+store=# INSERT INTO events_columnar (device_id, event_id, event_time, data)
+SELECT 
+  generate_series(1, 100) AS device_id,
+  nextval('events_columnar_event_id_seq') AS event_id,
+  now() AS event_time,
+  '{"key": "value"}' AS data;
+INSERT 0 100
+
+7. Tampilkan perbedaan ukuran tabel
+
+store=# SELECT
+    'events' AS table_name,
+    pg_size_pretty(pg_total_relation_size('events')) AS table_size
+UNION ALL
+SELECT
+    'events_columnar' AS table_name,
+    pg_size_pretty(pg_total_relation_size('events_columnar')) AS table_size;
+
+
+   table_name    | table_size 
+-----------------+------------
+ events          | 16 kB
+ events_columnar | 24 kB
+(2 rows)
+
+8. Kesimpulan
+kesimpulannya adalah perbedaan ukuran antara tabel biasa "events" dan tabel columnar "events_columnar" ketika dimasukkan data terlihat tidak berbeda jauh. 
+Tabel "events" memiliki ukuran sebesar 16 kB, sedangkan tabel "events_columnar" memiliki ukuran sebesar 24 kB. Artinya, tabel biasa dan tabel columnar memiliki perbedaan ukuran sekitar 8 kB. 
+Dalam kasus ini, tabel columnar tidak secara signifikan lebih efisien dalam hal penggunaan ruang penyimpanan dibandingkan dengan tabel biasa. 
+Perbedaan ukuran yang terlihat mungkin dipengaruhi oleh faktor lain seperti pengaturan konfigurasi dan jumlah data yang sebenarnya dimasukkan ke dalam tabel. 
+Dan dikarenakan saya sendiri belum pernah secara nyata menggunakan tabel columnar pada industri maka bagi saya tidak ada manfaat yang jelas dalam menggunakan tabel columnar dari segi penggunaan ruang penyimpanan. 

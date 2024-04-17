@@ -1,2 +1,20 @@
 Instruksi:
-- jawab soal dan taruh solusi di folder ini!
+1.Data lake	: Tempat penyimpanan data yang masih bersifat mentah atau belum dibersihkan, yang didapat dari sumber pertama seperti RDBMS, cvs, dll atau data lake cenderung menyajikan sejumlah besar data mentah yang tujuannya mungkin belum ditentukan
+
+Data warehouse	: tempat penyimpanan data yang telah dibersihkan dari data lake dan disimpan menyesuaikan output yang diinginkan atau data warehouse adalah tempat penyimpanan data terstruktur dan terfilter yang telah diproses untuk tujuan tertentu
+
+2.database warehouse (OLAP) digunakan untuk analisis data dan pengambilan keputusan, sementara teknologi konvensional (OLTP) berfokus pada operasi sehari-hari dan transaksi bisnis, seperti contoh:
+Sistem database OLTP akan digunakan untuk memproses transaksi penjualan harian, seperti menerima pesanan, memperbarui stok produk, dan memproses pembayaran. sedangkan
+Sistem database OLAP akan digunakan untuk mengumpulkan data historis dari sistem OLTP dan melakukan analisis lanjutan
+
+3.Sistem Manajemen Basis Data seperti postgreSQL, IBMDB, ETL Tools seperti Microsoft SQL Server, dll
+
+4.-buat konfigurasi citus menggunakan ekstensi .yml
+-kemudian buka terminal di dalam direktori yang terdapat file .yml nya, setelah itu masukan docker-compose up -d perintah ini akan menjalankan citus secara otomatis
+-setelah citus berhasil berjalan, kemudian masuk ke kontainer dengan perintah docker exec -it asberg psql -U myuser mydb menyesuaikan pada nama yang dibuat
+-jika berhasil, berikutnya membuat tabel
+-jika berhasil kemudian, pastikan tabel benar-benar terbuat dengan masukan perintah \d tabel
+
+5.Access method heap mengacu pada penyimpanan data dalam format yang mirip dengan tabel biasa. data disimpan berurutan, dan setiap baris memiliki struktur yang serupa atau sama. 
+
+sedangkan columnar mengacu pada penyimpanan data dalam format kolom. Setiap kolom disimpan secara terpisah dengan nilai-nilai yang serupa. 

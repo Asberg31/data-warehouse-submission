@@ -1,0 +1,11 @@
+1. Replication	: 
+the same data is copied among multiple nodes
+Used for backup / high availibility
+
+Sharding	: 
+the data is chunked, into several parts and distribute among multiple nodes
+use for distribute processing/storage
+you can store data larger than node capacity
+
+
+2. 
